@@ -3,6 +3,7 @@
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useEffect, useState } from "react";
 import { apiFetch } from "./lib/api";
+import { PatientModal } from "@/components/detailsModal";
 
 // Tipos ---------------------------
 type AppointmentStage =
@@ -34,7 +35,7 @@ const columnLabels: Record<AppointmentStage, string> = {
 const petTypeLabels: Record<string, string> = {
   dog: "Cachorro",
   cat: "Gato",
-  bird: "Pássaro",
+  bird: "Ave",
 };
 
 const translatePetType = (type: string) =>
@@ -43,6 +44,18 @@ const translatePetType = (type: string) =>
 export default function DashboardPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"view" | "edit" | "create">("view");
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  function openAppointment(id: number) {
+    setSelectedId(id);
+    setModalMode("view");
+    setModalOpen(true);
+  }
+  
+
 
   // Fetch API
   const loadData = async () => {
@@ -160,6 +173,7 @@ export default function DashboardPage() {
                                 {...prov.draggableProps}
                                 {...prov.dragHandleProps}
                                 className="border p-4 rounded-xl shadow-sm bg-white cursor-pointer hover:bg-gray-50 transition"
+                                onClick={() => openAppointment(item.id)}
                               >
                                 <h3 className="text-lg font-semibold text-gray-800">
                                   {item.pet.name}
@@ -224,6 +238,13 @@ export default function DashboardPage() {
           )}
         </div>
       </DragDropContext>
+      <PatientModal
+        id={selectedId}
+        open={modalOpen}
+        mode={modalMode}
+        onOpenChange={setModalOpen}
+        onUpdated={reloadList}
+      />
     </div>
   );
 }
