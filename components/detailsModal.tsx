@@ -44,6 +44,9 @@ const speciesReverse = {
   Ave: "bird",
 } as const;
 
+type SpeciesKey = keyof typeof speciesOptions;     // "cat" | "dog" | "bird"
+type SpeciesLabel = keyof typeof speciesReverse;   // "Gato" | "Cachorro" | "Ave"
+
 export function PatientModal({ id, open, mode, onOpenChange, onUpdated }: PatientModalProps) {
   const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(mode !== "view");
@@ -93,6 +96,26 @@ export function PatientModal({ id, open, mode, onOpenChange, onUpdated }: Patien
     })();
   }, [open, id, mode, baseURL]);
 
+  useEffect(() => {
+    if (open && mode === "create") {
+      const now = new Date();
+      now.setHours(now.getHours() - 3); // Ajusta para fuso do Brasil
+
+      setData({
+        priority: "normal",
+        arrival_at: now.toISOString().slice(0, 16),
+        stage: "waiting_for_attendance",
+        description: "",
+        pet: {
+          name: "",
+          type: "",
+          breed: "",
+          tutor_name: "",
+        },
+      });
+    }
+  }, [open, mode]);
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -123,14 +146,14 @@ export function PatientModal({ id, open, mode, onOpenChange, onUpdated }: Patien
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] p-0 overflow-hidden">
+      <DialogContent className="max-w-2xl max-h-[90vh] p-0 overflow-y-auto">
         <form onSubmit={handleSave}>
-          <DialogHeader className="p-6 pb-3">
+          <DialogHeader className="p-6 pb-3"> 
             <DialogTitle className="flex items-start justify-between w-full">
               <div>
                 {editMode ? "Editar Atendimento" : data.pet?.name}
                 {!editMode && (
-                  <p className="text-sm text-muted-foreground mt-1">{speciesOptions[data.pet?.type]}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{speciesOptions[data.pet?.type as SpeciesKey]}</p>
                 )}
               </div>
 
@@ -204,9 +227,10 @@ export function PatientModal({ id, open, mode, onOpenChange, onUpdated }: Patien
                       {editMode ? (
                         <select
                           className="mt-1 w-full border rounded p-2 bg-background"
-                          value={speciesOptions[data.pet.type]}
-                          onChange={(e) => setData({ ...data, pet: { ...data.pet, type: speciesReverse[e.target.value] } })}
+                          value={speciesOptions[data.pet.type as SpeciesKey ]}
+                          onChange={(e) => setData({ ...data, pet: { ...data.pet, type: speciesReverse[e.target.value as SpeciesLabel] } })}
                         >
+                          <option value="">Selecione...</option>
                           {Object.values(speciesOptions).map((label) => (
                             <option key={label} value={label}>
                               {label}
@@ -214,7 +238,7 @@ export function PatientModal({ id, open, mode, onOpenChange, onUpdated }: Patien
                           ))}
                         </select>
                       ) : (
-                        <p className="text-sm">{speciesOptions[data.pet.type]}</p>
+                        <p className="text-sm">{speciesOptions[data.pet.type as SpeciesKey ]}</p>
                       )}
                     </div>
 
@@ -300,13 +324,14 @@ export function PatientModal({ id, open, mode, onOpenChange, onUpdated }: Patien
                 </div>
               </div>
             )}
-          </ScrollArea>
+          
 
-          <DialogFooter className="px-6 pb-4">
-            <DialogClose asChild>
-              <Button variant="outline">Fechar</Button>
-            </DialogClose>
-          </DialogFooter>
+            <DialogFooter className="px-6 pb-6 mt-6">
+              <DialogClose asChild>
+                <Button variant="outline">Fechar</Button>
+              </DialogClose>
+            </DialogFooter>
+          </ScrollArea>
         </form>
       </DialogContent>
     </Dialog>

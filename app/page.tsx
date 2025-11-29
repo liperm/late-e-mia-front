@@ -131,6 +131,11 @@ export default function DashboardPage() {
 
         <button
           className="bg-black text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 hover:bg-gray-800 transition"
+          onClick={() => {
+          setSelectedId(null);
+          setModalMode("create");
+          setModalOpen(true);
+          }}
         >
           <span className="text-lg">+</span> Novo Paciente
         </button>
