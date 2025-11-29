@@ -60,7 +60,7 @@ export default function DashboardPage() {
   // Fetch API
   const loadData = async () => {
     try {
-      const apiURL = process.env.API_URL ?? "http://localhost:3000";
+      const apiURL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
       const res = await apiFetch(`${apiURL}/appointments`, {
         credentials: "include",
       });
@@ -97,7 +97,7 @@ export default function DashboardPage() {
 
     // API update
     try {
-      const apiURL = process.env.API_URL ?? "http://localhost:3000";
+      const apiURL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
       await apiFetch(`${apiURL}/appointments/${id}`, {
         method: "PATCH",
         credentials: "include",

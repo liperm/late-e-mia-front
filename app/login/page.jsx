@@ -29,7 +29,7 @@ export default function LoginPage() {
     }
   }, [loginError]);
 
-  const API_BASE = process.env.API_URL ?? "http://localhost:3000";
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
   const LOGIN_PATH = "/auth/login";
   const LOGIN_URL = `${API_BASE.replace(/\/$/, "")}${LOGIN_PATH}`;
 
