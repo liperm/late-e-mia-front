@@ -1,6 +1,6 @@
 "use client";
 
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { useEffect, useState } from "react";
 import { apiFetch } from "./lib/api";
 import { PatientModal } from "@/components/detailsModal";
@@ -65,6 +65,9 @@ export default function DashboardPage() {
         credentials: "include",
       });
 
+      if (!res) throw new Error("apiFetch retornou null");
+      if (!res.ok) throw new Error("Erro ao carregar dados");
+
       const data: Appointment[] = await res.json();
       setAppointments(data);
     } finally {
@@ -79,7 +82,7 @@ export default function DashboardPage() {
   const reloadList = async () => loadData();
 
   // 🟡 Drag & Drop
-  const handleDragEnd = async (result) => {
+  const handleDragEnd = async (result: DropResult) => {
     const { destination, source, draggableId } = result;
     if (!destination) return;
     if (destination.droppableId === source.droppableId) return;
