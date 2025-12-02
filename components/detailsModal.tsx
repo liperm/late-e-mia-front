@@ -63,7 +63,7 @@ export function PatientModal({ id, open, mode, onOpenChange, onUpdated }: Patien
     },
   });
 
-  const baseURL = process.env.API_URL || "http://localhost:3000";
+  const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
   const urgencyColors: Record<string, string> = {
     normal: "bg-green-100 text-green-800 border-green-200",
